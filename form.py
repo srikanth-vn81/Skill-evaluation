@@ -3,8 +3,16 @@ import boto3
 import pandas as pd
 from io import StringIO
 
-# Initialize the S3 client
-s3 = boto3.client('s3')
+# Read AWS credentials from Streamlit secrets
+aws_access_key_id = st.secrets["default"]["AKIAQ3EGWJGVAXZPBIXU"]
+aws_secret_access_key = st.secrets["default"]["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"]
+
+# Initialize the S3 client with credentials
+s3 = boto3.client(
+    's3',
+    aws_access_key_id=aws_access_key_id,
+    aws_secret_access_key=aws_secret_access_key
+)
 
 # Function to read existing data from S3
 def read_csv_from_s3(bucket_name, s3_file_name):
@@ -58,5 +66,3 @@ if submit_button:
 
     # Upload updated CSV to S3
     upload_to_s3(csv_content, bucket_name, s3_file_name)
-
-   
