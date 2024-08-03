@@ -4,14 +4,16 @@ import pandas as pd
 from io import StringIO
 
 # Read AWS credentials from Streamlit secrets
-aws_access_key_id = st.secrets["default"]["AKIAQ3EGWJGVAXZPBIXU"]
-aws_secret_access_key = st.secrets["default"]["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"]
+aws_access_key_id = st.secrets["default"]["aws_access_key_id"]
+aws_secret_access_key = st.secrets["default"]["aws_secret_access_key"]
+aws_default_region = st.secrets["default"]["aws_default_region"]
 
 # Initialize the S3 client with credentials
 s3 = boto3.client(
     's3',
     aws_access_key_id=aws_access_key_id,
-    aws_secret_access_key=aws_secret_access_key
+    aws_secret_access_key=aws_secret_access_key,
+    region_name=aws_default_region
 )
 
 # Function to read existing data from S3
@@ -23,6 +25,9 @@ def read_csv_from_s3(bucket_name, s3_file_name):
         return df
     except s3.exceptions.NoSuchKey:
         return pd.DataFrame()  # Return an empty DataFrame if file does not exist
+    except Exception as e:
+        st.error(f"Error reading data from S3: {e}")
+        return pd.DataFrame()
 
 # Function to upload data to S3
 def upload_to_s3(file_content, bucket_name, s3_file_name):
